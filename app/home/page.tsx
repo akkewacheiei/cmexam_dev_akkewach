@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect, ChangeEvent } from "react";
-import Link from 'next/link'
-
+import Link from "next/link";
 
 async function getData() {
   const api_url = "https://dummyjson.com/products";
@@ -33,6 +32,17 @@ interface Products {
 export default async function page() {
   const [products, setProducts] = useState<Products>();
   const data = await getData();
+
+  useEffect(() => {
+    //componentDidMount()
+    console.log("componentDidMount()");
+  }, []);
+
+
+/*   useEffect(() => {
+    //componentDidUpdate()
+    console.log("componentDidUpdate()");
+  }, [somthing]); */
 
   return (
     <div>
