@@ -28,6 +28,8 @@ interface Product {
 export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [priceFilter, setPriceFilter] = useState<string>("all");
+
   let timeout: NodeJS.Timeout | null = null;
 
   useEffect(() => {
@@ -49,8 +51,6 @@ export default function HomePage() {
     };
   }, []);
 
-
-
   const debounceFetchData = () => {
     const fetchData = async () => {
       try {
@@ -70,18 +70,20 @@ export default function HomePage() {
   };
 
   const filterProductsBySearchTerm = () => {
-    if (!searchTerm) {
-      return products; // Return all products if searchTerm is empty
-    }
-
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
-
-    return products.filter((product) => {
+    let filtered = products.filter((product) => {
       // Check if any of the product properties contain the searchTerm
       return Object.values(product).some((value) =>
         value.toString().toLowerCase().includes(lowerCaseSearchTerm)
       );
     });
+
+    // Apply price filter
+    if (priceFilter === "up1000") {
+      filtered = filtered.filter((product) => product.price > 1000);
+    }
+
+    return filtered;
   };
 
   const filteredProducts = filterProductsBySearchTerm();
@@ -91,26 +93,47 @@ export default function HomePage() {
     debounceFetchData();
   };
 
+  const handlePriceFilterChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setPriceFilter(event.target.value);
+  };
 
   useEffect(() => {
     console.log("searchTerm :", searchTerm);
-    
   }, [searchTerm]);
 
   return (
     <div>
       <h1>Home Page</h1>
       <input
+        className="mt-10 mb-10 mr-10"
         type="text"
         value={searchTerm}
         onChange={handleSearchChange}
         placeholder="Search..."
       />
+
+      <label>Choose a filter:</label>
+      <select
+        name="priceFilter"
+        id="priceFilter"
+        onChange={handlePriceFilterChange}
+      >
+        <option value="all">ทั้งหมด</option>
+        <option value="up1000">มากกว่า 1000</option>
+      </select>
+
       {filteredProducts.map((item: Product) => (
         <div className="flex gap-3 mb-3 items-center border-2" key={item.id}>
-          <img src={item.thumbnail} alt="thumbnail" width="30" height="30"></img>
+          <img
+            src={item.thumbnail}
+            alt="thumbnail"
+            width="30"
+            height="30"
+          ></img>
           <p>{item.title}</p>
-          <p>{item.price}</p>
+          <p>ราคา:{item.price}</p>
           <p>{item.stock}</p>
           <Link href={`/home/${item.id}`}>Detail</Link>
         </div>
