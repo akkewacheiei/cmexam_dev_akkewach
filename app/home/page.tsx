@@ -33,10 +33,10 @@ export default async function page() {
   const [products, setProducts] = useState<Products>();
   const data = await getData();
 
-  useEffect(() => {
+/*   useEffect(() => {
     //componentDidMount()
     console.log("componentDidMount()");
-  }, []);
+  }, []); */
 
 
 /*   useEffect(() => {
