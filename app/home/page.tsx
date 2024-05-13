@@ -28,6 +28,7 @@ interface Product {
 export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showTotalPrice, setShowTotalPrice] = useState<boolean>(false);
   const [priceFilter, setPriceFilter] = useState<string>("all");
 
   let timeout: NodeJS.Timeout | null = null;
@@ -96,6 +97,13 @@ export default function HomePage() {
   const handlePriceFilterChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
+    console.log("value :", event.target.value);
+    if (event.target.value === "total_price") {
+      setShowTotalPrice(true);
+    } else {
+      setShowTotalPrice(false);
+    }
+
     setPriceFilter(event.target.value);
   };
 
@@ -122,8 +130,8 @@ export default function HomePage() {
       >
         <option value="all">ทั้งหมด</option>
         <option value="up1000">มากกว่า 1000</option>
+        <option value="total_price">แสดงราคารวมต่อชิ้น</option>
       </select>
-
 
       <table className="border-collapse w-full">
         <thead>
@@ -132,6 +140,10 @@ export default function HomePage() {
             <th className="border border-gray-400 px-4 py-2">Title</th>
             <th className="border border-gray-400 px-4 py-2">Price</th>
             <th className="border border-gray-400 px-4 py-2">Stock</th>
+            {showTotalPrice && (
+              <th className="border border-gray-400 px-4 py-2">Total Price</th>
+            )}
+
             <th className="border border-gray-400 px-4 py-2">Detail</th>
           </tr>
         </thead>
@@ -149,6 +161,11 @@ export default function HomePage() {
               <td className="border border-gray-400 px-4 py-2">{item.title}</td>
               <td className="border border-gray-400 px-4 py-2">{item.price}</td>
               <td className="border border-gray-400 px-4 py-2">{item.stock}</td>
+              {showTotalPrice && (
+                <td className="border border-gray-400 px-4 py-2">
+                  {item.price * item.stock}
+                </td>
+              )}
               <td className="border border-gray-400 px-4 py-2">
                 <Link href={`/home/${item.id}`}>Detail</Link>
               </td>
