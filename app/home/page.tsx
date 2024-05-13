@@ -30,6 +30,7 @@ export default function HomePage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showTotalPrice, setShowTotalPrice] = useState<boolean>(false);
   const [priceFilter, setPriceFilter] = useState<string>("all");
+  const [statusDescSort, setStatusDescSort] = useState<boolean>(false);
 
   let timeout: NodeJS.Timeout | null = null;
 
@@ -84,6 +85,13 @@ export default function HomePage() {
       filtered = filtered.filter((product) => product.price > 1000);
     }
 
+    // Sort by rating
+    // desc =  filtered.sort((a, b) => b.rating - a.rating);
+    // !desc =  filtered.sort((a, b) => a.rating - b.rating);
+    if (statusDescSort) {
+      filtered.sort((a, b) => b.rating - a.rating);
+    }
+
     return filtered;
   };
 
@@ -107,6 +115,12 @@ export default function HomePage() {
     setPriceFilter(event.target.value);
   };
 
+  const handleSortOrderChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setStatusDescSort(true);
+  };
+
   useEffect(() => {
     console.log("searchTerm :", searchTerm);
   }, [searchTerm]);
@@ -126,11 +140,18 @@ export default function HomePage() {
       <select
         name="priceFilter"
         id="priceFilter"
-        onChange={handlePriceFilterChange}
+        onChange={(event) => {
+          if (event.target.value === "desc") {
+            handleSortOrderChange(event);
+          } else {
+            handlePriceFilterChange(event);
+          }
+        }}
       >
         <option value="all">ทั้งหมด</option>
         <option value="up1000">มากกว่า 1000</option>
         <option value="total_price">แสดงราคารวมต่อชิ้น</option>
+        <option value="desc">{"เรียง rating (desc)"}</option>
       </select>
 
       <table className="border-collapse w-full">
@@ -143,7 +164,7 @@ export default function HomePage() {
             {showTotalPrice && (
               <th className="border border-gray-400 px-4 py-2">Total Price</th>
             )}
-
+            <th className="border border-gray-400 px-4 py-2">Rating</th>
             <th className="border border-gray-400 px-4 py-2">Detail</th>
           </tr>
         </thead>
@@ -166,6 +187,9 @@ export default function HomePage() {
                   {item.price * item.stock}
                 </td>
               )}
+              <td className="border border-gray-400 px-4 py-2">
+                {item.rating}
+              </td>
               <td className="border border-gray-400 px-4 py-2">
                 <Link href={`/home/${item.id}`}>Detail</Link>
               </td>
