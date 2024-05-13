@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 
 async function getData() {
@@ -25,31 +25,31 @@ interface Product {
   images: number[];
 }
 
-interface Products {
-  products: number[];
-}
+export default function HomePage() {
+  const [products, setProducts] = useState<Product[]>([]);
 
-export default async function page() {
-  const [products, setProducts] = useState<Products>();
-  const data = await getData();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getData();
+        setProducts(data.products); // Store only the array of products in state
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
-/*   useEffect(() => {
-    //componentDidMount()
-    console.log("componentDidMount()");
-  }, []); */
+    fetchData();
 
-
-/*   useEffect(() => {
-    //componentDidUpdate()
-    console.log("componentDidUpdate()");
-  }, [somthing]); */
+    // Cleanup function to cancel any pending fetch on unmount or before next fetch
+    return () => {};
+  }, []);
 
   return (
     <div>
       <h1>Home Page</h1>
-      {data.products.map((item: Product) => (
-        <div className="flex gap-3 mb-3 items-center border-2">
-          <img src={item.thumbnail} alt="tumbnail" width="30" height="30"></img>
+      {products.map((item: Product) => (
+        <div className="flex gap-3 mb-3 items-center border-2" key={item.id}>
+          <img src={item.thumbnail} alt="thumbnail" width="30" height="30"></img>
           <p>{item.title}</p>
           <p>{item.price}</p>
           <p>{item.stock}</p>
