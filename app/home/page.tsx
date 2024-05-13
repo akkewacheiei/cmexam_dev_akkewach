@@ -27,12 +27,14 @@ interface Product {
 
 export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  let timeout: NodeJS.Timeout | null = null;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getData();
-        setProducts(data.products); // Store only the array of products in state
+        setProducts(data.products);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -40,13 +42,52 @@ export default function HomePage() {
 
     fetchData();
 
-    // Cleanup function to cancel any pending fetch on unmount or before next fetch
-    return () => {};
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    };
   }, []);
+
+
+  const debounceFetchData = () => {
+    const fetchData = async () => {
+      try {
+        const data = await getData();
+        setProducts(data.products);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(() => {
+      fetchData();
+    }, 300); // 300 milliseconds debounce delay
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+    debounceFetchData();
+  };
+
+
+  useEffect(() => {
+    console.log("searchTerm :", searchTerm);
+    
+  }, [searchTerm]);
 
   return (
     <div>
       <h1>Home Page</h1>
+      <input
+        type="text"
+        value={searchTerm}
+        onChange={handleSearchChange}
+        placeholder="Search..."
+      />
       {products.map((item: Product) => (
         <div className="flex gap-3 mb-3 items-center border-2" key={item.id}>
           <img src={item.thumbnail} alt="thumbnail" width="30" height="30"></img>
