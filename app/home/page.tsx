@@ -124,20 +124,38 @@ export default function HomePage() {
         <option value="up1000">มากกว่า 1000</option>
       </select>
 
-      {filteredProducts.map((item: Product) => (
-        <div className="flex gap-3 mb-3 items-center border-2" key={item.id}>
-          <img
-            src={item.thumbnail}
-            alt="thumbnail"
-            width="30"
-            height="30"
-          ></img>
-          <p>{item.title}</p>
-          <p>ราคา:{item.price}</p>
-          <p>{item.stock}</p>
-          <Link href={`/home/${item.id}`}>Detail</Link>
-        </div>
-      ))}
+
+      <table className="border-collapse w-full">
+        <thead>
+          <tr>
+            <th className="border border-gray-400 px-4 py-2">Thumbnail</th>
+            <th className="border border-gray-400 px-4 py-2">Title</th>
+            <th className="border border-gray-400 px-4 py-2">Price</th>
+            <th className="border border-gray-400 px-4 py-2">Stock</th>
+            <th className="border border-gray-400 px-4 py-2">Detail</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredProducts.map((item: Product) => (
+            <tr key={item.id}>
+              <td className="border border-gray-400 px-4 py-2">
+                <img
+                  src={item.thumbnail}
+                  alt="thumbnail"
+                  width="30"
+                  height="30"
+                ></img>
+              </td>
+              <td className="border border-gray-400 px-4 py-2">{item.title}</td>
+              <td className="border border-gray-400 px-4 py-2">{item.price}</td>
+              <td className="border border-gray-400 px-4 py-2">{item.stock}</td>
+              <td className="border border-gray-400 px-4 py-2">
+                <Link href={`/home/${item.id}`}>Detail</Link>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
