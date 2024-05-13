@@ -50,6 +50,7 @@ export default function HomePage() {
   }, []);
 
 
+
   const debounceFetchData = () => {
     const fetchData = async () => {
       try {
@@ -67,6 +68,23 @@ export default function HomePage() {
       fetchData();
     }, 300); // 300 milliseconds debounce delay
   };
+
+  const filterProductsBySearchTerm = () => {
+    if (!searchTerm) {
+      return products; // Return all products if searchTerm is empty
+    }
+
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+
+    return products.filter((product) => {
+      // Check if any of the product properties contain the searchTerm
+      return Object.values(product).some((value) =>
+        value.toString().toLowerCase().includes(lowerCaseSearchTerm)
+      );
+    });
+  };
+
+  const filteredProducts = filterProductsBySearchTerm();
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -88,7 +106,7 @@ export default function HomePage() {
         onChange={handleSearchChange}
         placeholder="Search..."
       />
-      {products.map((item: Product) => (
+      {filteredProducts.map((item: Product) => (
         <div className="flex gap-3 mb-3 items-center border-2" key={item.id}>
           <img src={item.thumbnail} alt="thumbnail" width="30" height="30"></img>
           <p>{item.title}</p>
