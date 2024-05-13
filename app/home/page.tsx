@@ -29,6 +29,7 @@ export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showTotalPrice, setShowTotalPrice] = useState<boolean>(false);
+  const [showAllTotalPrice, setShowAllTotalPrice] = useState<boolean>(false);
   const [priceFilter, setPriceFilter] = useState<string>("all");
   const [statusDescSort, setStatusDescSort] = useState<boolean>(false);
 
@@ -112,6 +113,12 @@ export default function HomePage() {
       setShowTotalPrice(false);
     }
 
+    if (event.target.value === "all_total_price") {
+      setShowAllTotalPrice(true);
+    } else {
+      setShowAllTotalPrice(false);
+    }
+
     setPriceFilter(event.target.value);
   };
 
@@ -124,6 +131,11 @@ export default function HomePage() {
   useEffect(() => {
     console.log("searchTerm :", searchTerm);
   }, [searchTerm]);
+
+  const total = filteredProducts.reduce(
+    (accumulator, item) => accumulator + item.price * item.stock,
+    0
+  );
 
   return (
     <div>
@@ -152,7 +164,10 @@ export default function HomePage() {
         <option value="up1000">มากกว่า 1000</option>
         <option value="total_price">แสดงราคารวมต่อชิ้น</option>
         <option value="desc">{"เรียง rating (desc)"}</option>
+        <option value="all_total_price">แสดงราคารวมทั้งหมด</option>
       </select>
+
+      {showAllTotalPrice && <h1>{`All Product Total Price : ${total}`}</h1>}
 
       <table className="border-collapse w-full">
         <thead>
@@ -162,7 +177,7 @@ export default function HomePage() {
             <th className="border border-gray-400 px-4 py-2">Price</th>
             <th className="border border-gray-400 px-4 py-2">Stock</th>
             {showTotalPrice && (
-              <th className="border border-gray-400 px-4 py-2">Total Price</th>
+              <th className="border border-gray-400 px-4 py-2">{`Total Price`}</th>
             )}
             <th className="border border-gray-400 px-4 py-2">Rating</th>
             <th className="border border-gray-400 px-4 py-2">Detail</th>
