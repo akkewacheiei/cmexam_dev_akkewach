@@ -1,12 +1,24 @@
 "use client";
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { redirect } from "next/navigation";
-import { useRouter } from "next/router";
+import * as Yup from 'yup';
+
 
 interface FormData {
   email: string;
   password: string;
 }
+// Schema สำหรับตรวจสอบฟอร์แมตของอีเมล
+const emailSchema = Yup.string().email('รูปแบบอีเมลไม่ถูกต้อง').required('กรุณากรอกอีเมล');
+
+// Schema สำหรับตรวจสอบความยาวของรหัสผ่าน
+const passwordSchema = Yup.string().min(4, 'รหัสผ่านต้องมีความยาวอย่างน้อย 4 ตัวอักษร').required('กรุณากรอกรหัสผ่าน');
+
+// นำ schema มารวมกันใน schema ที่เป็น Object
+const loginSchema = Yup.object().shape({
+  email: emailSchema,
+  password: passwordSchema
+});
 
 export default function page(): JSX.Element {
   const [statusLogin, setStatusLogin] = useState<String>("default");
@@ -23,14 +35,19 @@ export default function page(): JSX.Element {
     }));
   };
 
-  const handleSubmit = () => {
-    if (formData.email === "aa@bb.cc" && formData.password === "1234") {
-      console.log("Login Success!!!");
-      setStatusLogin("success");
-
-      //useRouter().push("/home");
-    } else {
-      setStatusLogin("fail");
+  const handleSubmit = async () => {
+    try {
+      await loginSchema.validate(formData, { abortEarly: false });
+      if (formData.email === "aa@bb.cc" && formData.password === "1234") {
+        console.log("Login Success!!!");
+        setStatusLogin("success");
+      } else {
+        setStatusLogin("fail");
+      }
+    } catch (error) {
+      // จัดรูปแบบข้อผิดพลาดจาก Yup เพื่อแสดงให้ผู้ใช้เห็น
+      const errorMessage = error.inner.map((e: any) => e.message).join("\n");
+      console.error(errorMessage);
     }
   };
 
