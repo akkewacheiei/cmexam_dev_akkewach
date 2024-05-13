@@ -2,6 +2,7 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { redirect } from "next/navigation";
 import * as Yup from 'yup';
+import Button from '@mui/material/Button';
 
 
 interface FormData {
@@ -76,9 +77,8 @@ export default function page(): JSX.Element {
         value={formData.password}
         onChange={handleInput}
       ></input>
-      <button className=" bg-green-300  p-5" onClick={handleSubmit}>
-        เข้าสู่ระบบ
-      </button>
+      <Button variant="contained" onClick={handleSubmit}>เข้าสู่ระบบ</Button>
+
       {statusLogin === "fail" && (
         <h1 className=" text-red-500">Email or password incorrect</h1>
       )}
